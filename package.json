@@ -35,7 +35,7 @@
     "async": "2.0.0",
     "aws-sdk": "2.6.12",
     "cnn-content-retriever": "1.2.0",
-    "cnn-hapi": "0.6.4",
+    "cnn-hapi": "2.0.0",
     "cnn-health": "0.2.0",
     "cnn-logger": "1.0.0",
     "debug": "2.2.0",
