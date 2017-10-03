@@ -1,0 +1,14 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.7.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:debug:20170905':
+    - cnn-health > debug:
+        patched: '2017-10-03T04:48:07.689Z'
+    - cnn-hapi > cnn-health > debug:
+        patched: '2017-10-03T04:48:07.689Z'
+    - cnn-hapi > cnn-metrics > debug:
+        patched: '2017-10-03T04:48:07.689Z'
+    - cnn-content-retriever > debug:
+        patched: '2017-10-03T04:48:07.689Z'

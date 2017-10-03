@@ -20,7 +20,9 @@
     "start-static": "ENVIRONMENT=local PORT=5000 node tasks/generate-static-feed.js",
     "test": "eslint . && test/validate-json-files.sh && ENVIRONMENT=local PORT=5000 mocha test/unit -r test/mocha-setup.js",
     "update-apply": "ncu -u",
-    "update-check": "ncu"
+    "update-check": "ncu",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -35,16 +37,17 @@
     "async": "2.0.0",
     "aws-sdk": "2.6.12",
     "cnn-content-retriever": "1.7.0",
-    "cnn-hapi": "0.6.4",
+    "cnn-hapi": "2.0.0",
     "cnn-health": "0.2.0",
     "cnn-logger": "1.0.0",
-    "debug": "2.2.0",
+    "debug": "2.6.9",
     "moment": "2.14.1",
     "moment-timezone": "0.5.4",
     "nconf": "0.8.4",
     "request": "2.73.0",
     "underscore": "1.8.3",
-    "xml2js": "0.4.17"
+    "xml2js": "0.4.17",
+    "snyk": "^1.42.3"
   },
   "devDependencies": {
     "chai": "3.5.0",
@@ -71,5 +74,6 @@
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/jamsyoung/cnn-google-newsstand/issues"
-  }
+  },
+  "snyk": true
 }
