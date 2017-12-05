@@ -39,7 +39,7 @@
     "cnn-health": "0.2.0",
     "cnn-logger": "1.0.0",
     "debug": "2.2.0",
-    "moment": "2.14.1",
+    "moment": "2.19.3",
     "moment-timezone": "0.5.4",
     "nconf": "0.8.4",
     "request": "2.73.0",
