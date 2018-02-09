@@ -1,5 +1,19 @@
 # CNN Google Newsstand Changelog
 
+
+## 2018-02-09, Version 1.12.2, @sjoseph
+
+### Notable changes
+-adding npm key
+
+### Commits
+
+* [[`b5f58a10c4`](https://github.com/jamsyoung/cnn-google-newsstand/commit/b5f58a10c4)] - adding npm key (Sean Joseph)
+
+
+
+
+
 ## 2018-02-09, Version 1.12.1, @sjoseph
 
 ### Notable changes
