@@ -1,6 +1,20 @@
 # CNN Google Newsstand Changelog
 
 
+
+## 2018-02-12, Version 1.12.3, @khowen
+
+### Notable changes
+
+- adding fix for missing video size
+
+### Commits
+* [[`2d4a085254`](https://github.com/jamsyoung/cnn-google-newsstand/commit/2d4a085254)] - fixing conflict (Sean Joseph)
+* [[`6dec9bd9ec`](https://github.com/jamsyoung/cnn-google-newsstand/commit/6dec9bd9ec)] - **(SEMVER-MINOR)** **feed-generator**: add video sizing (Katie Owen) [#60](https://github.com/jamsyoung/cnn-google-newsstand/pull/60)
+
+
+
+
 ## 2018-02-09, Version 1.12.2, @sjoseph
 
 ### Notable changes
