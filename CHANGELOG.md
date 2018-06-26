@@ -1,5 +1,14 @@
 # CNN Google Newsstand Changelog
 
+## 2018-06-26, Version 1.13.0, @khowen
+
+### Notable changes
+* [[`bb5936cfca`](https://github.com/jamsyoung/cnn-google-newsstand/commit/bb5936cfca)] - **(SEMVER-MINOR)** **README**: update README (Katie Holland Owen) [#66](https://github.com/jamsyoung/cnn-google-newsstand/pull/66)
+
+
+- update README
+
+### Commits
 
 
 ## 2018-02-12, Version 1.12.3, @khowen
