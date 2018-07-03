@@ -28,44 +28,46 @@ const request = require('request'),
     log = require('cnn-logger')(logConfig),
     moment = require('moment');
 
-
-
 // connect to CloudAMQP and use/create teh queue to subscribe to
-amqp.connect(cloudamqpConnectionString, (error, connection) => {
-    connection.createChannel((error, channel) => {
-        const exchangeName = config.get('exchangeName');
+amqp.connect(
+    cloudamqpConnectionString,
+    (error, connection) => {
+        connection.createChannel((error, channel) => {
+            const exchangeName = config.get('exchangeName');
 
-        channel.assertExchange(exchangeName, 'topic', {durable: true});
+            channel.assertExchange(exchangeName, 'topic', {durable: true});
 
-        channel.assertQueue(config.get('queueNameVideos'), {durable: true}, (error, queueName) => {
-            const routingKeys = config.get('routingKeysVideos');
+            channel.assertQueue(config.get('queueNameVideos'), {durable: true}, (error, queueName) => {
+                const routingKeys = config.get('routingKeysVideos');
 
-            routingKeys.forEach((routingKey) => {
-                channel.bindQueue(queueName.queue, exchangeName, routingKey);
+                routingKeys.forEach((routingKey) => {
+                    channel.bindQueue(queueName.queue, exchangeName, routingKey);
+                });
+
+                channel.prefetch(1);
+
+                channel.consume(
+                    queueName.queue,
+                    (message) => {
+                        debugLog(`AMQP Message: ${message.fields.routingKey}: ${message.content.toString()}`);
+                        log.debug(`AMQP Message: ${message.fields.routingKey}: ${message.content.toString()}`);
+                        debugLog(`Adding url to fg: ${JSON.parse(message.content.toString()).url} -> ${fg.urls}`);
+                        log.debug(`Adding url to fg: ${JSON.parse(message.content.toString()).url} -> ${fg.urls}`);
+                        fg.urls = JSON.parse(message.content.toString()).url;
+                        fg.urls = fg.urls.filter((o) => {
+                            return o !== null;
+                        });
+                        channel.ack(message);
+                    },
+                    {noAck: false, exclusive: true}
+                );
             });
-
-            channel.prefetch(1);
-
-            channel.consume(
-                queueName.queue,
-                (message) => {
-                    debugLog(`AMQP Message: ${message.fields.routingKey}: ${message.content.toString()}`);
-                    log.debug(`AMQP Message: ${message.fields.routingKey}: ${message.content.toString()}`);
-                    debugLog(`Adding url to fg: ${JSON.parse(message.content.toString()).url} -> ${fg.urls}`);
-                    log.debug(`Adding url to fg: ${JSON.parse(message.content.toString()).url} -> ${fg.urls}`);
-                    fg.urls = JSON.parse(message.content.toString()).url;
-                    channel.ack(message);
-                },
-                {noAck: false, exclusive: true}
-            );
         });
-    });
-});
-
-
+    }
+);
 
 function postToLSD(data) {
-    let suffix = (config.get('ENVIRONMENT') === 'prod') ? '' : `-${config.get('ENVIRONMENT')}`,
+    let suffix = config.get('ENVIRONMENT') === 'prod' ? '' : `-${config.get('ENVIRONMENT')}`,
         endpoint = `/cnn/content/google-newsstand/videos${suffix}.xml`,
         hosts = config.get('lsdHosts');
 
@@ -74,25 +76,25 @@ function postToLSD(data) {
     // debugLog(data);
 
     hosts.split(',').forEach((host) => {
-        request.post({
-            url: `http://${host}${endpoint}`,
-            body: data,
-            headers: {'Content-Type': 'application/rss+xml'}
-        },
-        (error/* , response, body*/) => {
-            if (error) {
-                debugLog(error.stack);
-                log.error(error.stack);
-            } else {
-                debugLog(`Successfully uploaded data to ${hosts} at ${endpoint}`);
-                log.debug(`Successfully uploaded data to ${hosts} at ${endpoint}`);
-                // debugLog(body);
+        request.post(
+            {
+                url: `http://${host}${endpoint}`,
+                body: data,
+                headers: {'Content-Type': 'application/rss+xml'}
+            },
+            (error /* , response, body*/) => {
+                if (error) {
+                    debugLog(error.stack);
+                    log.error(error.stack);
+                } else {
+                    debugLog(`Successfully uploaded data to ${hosts} at ${endpoint}`);
+                    log.debug(`Successfully uploaded data to ${hosts} at ${endpoint}`);
+                    // debugLog(body);
+                }
             }
-        });
+        );
     });
 }
-
-
 
 setInterval(() => {
     gnsHealthStatus.sectionFeeds.videos = {status: 201, valid: false, generateFeed: {status: 'processing'}};
