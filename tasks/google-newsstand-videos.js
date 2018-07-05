@@ -54,9 +54,7 @@ amqp.connect(cloudamqpConnectionString, (error, connection) => {
                     debugLog(`Adding url to fg: ${JSON.parse(message.content.toString()).url} -> ${fg.urls}`);
                     log.debug(`Adding url to fg: ${JSON.parse(message.content.toString()).url} -> ${fg.urls}`);
                     fg.urls = JSON.parse(message.content.toString()).url;
-                    fg.urls = fg.urls.filter( (o) => {
-                        return o !== null;
-                    });
+
                     channel.ack(message);
                 },
                 {noAck: false, exclusive: true}
@@ -101,9 +99,14 @@ setInterval(() => {
     gnsHealthStatus.sectionFeeds.videos = {status: 201, valid: false, generateFeed: {status: 'processing'}};
     debugLog('Generate videos Feed interval fired');
     log.debug('Generate videos Feed interval fired');
-    debugLog(fg.urls);
+    debugLog('Video URLs After Filter', fg.urls);
 
+    fg.urls = fg.urls.filter( (o) => {
+        return o !== null;
+    });
+    debugLog('Video URLs After Filter', fg.urls);
     if (fg.urls && fg.urls.length > 0) {
+
         fg.processContent().then(
             // success
             (rssFeed) => {
