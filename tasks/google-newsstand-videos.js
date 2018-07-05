@@ -51,9 +51,13 @@ amqp.connect(cloudamqpConnectionString, (error, connection) => {
                 (message) => {
                     debugLog(`AMQP Message: ${message.fields.routingKey}: ${message.content.toString()}`);
                     log.debug(`AMQP Message: ${message.fields.routingKey}: ${message.content.toString()}`);
-                    debugLog(`Adding url to fg: ${JSON.parse(message.content.toString()).url} -> ${fg.urls}`);
-                    log.debug(`Adding url to fg: ${JSON.parse(message.content.toString()).url} -> ${fg.urls}`);
-                    fg.urls = JSON.parse(message.content.toString()).url;
+
+                    const newVideoUrl = JSON.parse(message.content.toString()).url;
+                    if (newVideoUrl) {
+                        debugLog(`Adding url to fg: ${JSON.parse(message.content.toString()).url} -> ${fg.urls}`);
+                        log.debug(`Adding url to fg: ${JSON.parse(message.content.toString()).url} -> ${fg.urls}`);
+                        fg.urls = newVideoUrl;
+                    }
 
                     channel.ack(message);
                 },
@@ -100,10 +104,6 @@ setInterval(() => {
     debugLog('Generate videos Feed interval fired');
     log.debug('Generate videos Feed interval fired');
     debugLog('Video URLs After Filter', fg.urls);
-
-    fg.urls = fg.urls.filter( (o) => {
-        return o !== null;
-    });
     debugLog('Video URLs After Filter', fg.urls);
     if (fg.urls && fg.urls.length > 0) {
 
