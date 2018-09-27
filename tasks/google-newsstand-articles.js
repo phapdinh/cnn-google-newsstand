@@ -28,9 +28,11 @@ const request = require('request'),
     config = require('../config.js'),
     cloudamqpConnectionString = config.get('cloudamqpConnectionString'),
     latestFG = new FeedGenerator(),
+    businessFG = new FeedGenerator(),
     electionsFG = new FeedGenerator(),
     entertainmentFG = new FeedGenerator(),
     healthFG = new FeedGenerator(),
+    // TODO: remove when Money feed is decommissioned
     moneyFG = new FeedGenerator(),
     opinionsFG = new FeedGenerator(),
     politicsFG = new FeedGenerator(),
@@ -42,7 +44,8 @@ const request = require('request'),
     winterOlympics2018FG = new FeedGenerator(),
     enableElectionStory = config.get('gnsTurnOnElectionModule'),
     logConfig = config.get('logConfig'),
-    log = require('cnn-logger')(logConfig);
+    log = require('cnn-logger')(logConfig),
+    businessUrlRegex = new RegExp(config.get('sections').business);
 
 function processCNNMessage(message) {
     let mappedToASection = false;
@@ -88,7 +91,7 @@ function processCNNMessage(message) {
         mappedToASection = true;
     }
 
-    if (/\/tech\//.test(JSON.parse(message.content.toString()).url)) {
+    if (/\/tech|technology\//.test(JSON.parse(message.content.toString()).url)) {
         debugLog(`Adding url to tech feed: ${JSON.parse(message.content.toString()).url}`);
         techFG.urls = JSON.parse(message.content.toString()).url;
         mappedToASection = true;
@@ -103,6 +106,13 @@ function processCNNMessage(message) {
     if (/\/world\//.test(JSON.parse(message.content.toString()).url)) {
         debugLog(`Adding url to world feed: ${JSON.parse(message.content.toString()).url}`);
         worldFG.urls = JSON.parse(message.content.toString()).url;
+        mappedToASection = true;
+    }
+
+    // https://regex101.com/r/6KmnnT/1
+    if (businessUrlRegex.test(JSON.parse(message.content.toString()).url)) {
+        debugLog(`Adding url to business feed: ${JSON.parse(message.content.toString()).url}`);
+        businessFG.urls = JSON.parse(message.content.toString()).url;
         mappedToASection = true;
     }
 
@@ -125,6 +135,7 @@ function processCNNMessage(message) {
 
 }
 
+// TODO: Remove once Business is confirmed in production
 function processCNNMoneyMessage(message)  {
 
     let theURL = JSON.parse(message.content.toString()).url;
@@ -164,6 +175,8 @@ amqp.connect(cloudamqpConnectionString, (error, connection) => {
                         case 'cnn.gallery':
                             processCNNMessage(message);
                             break;
+
+                        // TODO: Remove after Business feed is confirmed in production
                         // MONEY CONTENT
                         case 'money.article':
                             processCNNMoneyMessage(message);
@@ -852,6 +865,7 @@ setInterval(() => {
     }
 }, config.get('gnsTaskIntervalMS'));
 
+// TODO: Remove once money feed is decommissioned
 setInterval(() => {
     debugLog('Generate money Feed interval fired');
     gnsHealthStatus.sectionFeeds.money = {status: 201, valid: false, generateFeed: {status: 'processing'}};
@@ -889,6 +903,47 @@ setInterval(() => {
         gnsHealthStatus.sectionFeeds.money.status = 200;
         gnsHealthStatus.sectionFeeds.money.valid = true;
         gnsHealthStatus.sectionFeeds.money.generateFeed.status = 'No updates';
+        debugLog('no updates');
+    }
+}, config.get('gnsTaskIntervalMS'));
+
+setInterval(() => {
+    debugLog('Generate business Feed interval fired');
+    gnsHealthStatus.sectionFeeds.business = {status: 201, valid: false, generateFeed: {status: 'processing'}};
+
+    if (businessFG.urls && businessFG.urls.length > 0) {
+        businessFG.processContent().then(
+            // success
+            (rssFeed) => {
+                console.log(rssFeed);
+
+                postToLSD(rssFeed, 'business');
+
+                // update health check status
+                gnsHealthStatus.sectionFeeds.business.status = 200;
+                gnsHealthStatus.sectionFeeds.business.valid = true;
+                gnsHealthStatus.sectionFeeds.business.generateFeed.status = 'success';
+                gnsHealthStatus.sectionFeeds.business.generateFeed.lastUpdate = moment().toISOString();
+
+                // post to LSD endpoint
+                businessFG.urls = 'clear';
+                debugLog(businessFG.urls);
+            },
+
+            // failure
+            (error) => {
+                gnsHealthStatus.sectionFeeds.business.status = 500;
+                gnsHealthStatus.sectionFeeds.business.valid = false;
+                gnsHealthStatus.sectionFeeds.business.generateFeed.status = 'failed';
+                gnsHealthStatus.sectionFeeds.business.generateFeed.failedAt = moment().toISOString();
+                console.log(error);
+            }
+        );
+    } else {
+        // update health check status
+        gnsHealthStatus.sectionFeeds.business.status = 200;
+        gnsHealthStatus.sectionFeeds.business.valid = true;
+        gnsHealthStatus.sectionFeeds.business.generateFeed.status = 'No updates';
         debugLog('no updates');
     }
 }, config.get('gnsTaskIntervalMS'));

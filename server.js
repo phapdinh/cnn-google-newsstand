@@ -25,6 +25,10 @@ global.gnsHealthStatus = {
     status: 201,
     testMode: config.get('gnsMonitoringTest'),
     sectionFeeds: {
+        business: {
+            status: 201,
+            generateFeed: {status: 'Pending'}
+        },
         us: {
             status: 201,
             generateFeed: {status: 'Pending'}
@@ -49,6 +53,7 @@ global.gnsHealthStatus = {
             status: 201,
             generateFeed: {status: 'Pending'}
         },
+        // TODO: Remove once business feed is confirmed in production
         money: {
             status: 201,
             generateFeed: {status: 'Pending'}

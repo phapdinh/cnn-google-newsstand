@@ -1,8 +1,10 @@
-# CNN Google Newsstand
+# CNN Google News
 
 Node.js app for generating the feed required by
-[Google Play Newsstand](https://play.google.com/store/newsstand) for displaying
-[CNN](https://cnn.com) content in the Google Newsstand app on iOS and Android.
+[Google News](https://play.google.com/store/newsstand) for displaying
+[CNN](https://cnn.com) content in the Google News app on iOS and Android.
+
+[Google News Docs](https://support.google.com/news/producer/answer/6170026?hl=en)
 
 ## Getting Started
 

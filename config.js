@@ -23,6 +23,7 @@ const nconf = require('nconf');
 
 // whitelist environment variables
 nconf.env([
+    'BUSINESS_SECTIONS',
     'CLOUDAMQP_AUTH',
     'DYNAIMAGE_AUTH',
     'ENVIRONMENT',
@@ -68,6 +69,7 @@ let blackList = '\\/studentnews\\/,\\/videos\\/spanish\\/,fast-facts\\/index.htm
             exchangeName: 'cnn-town-crier-ref',
             queueNameArticles: `cnn-google-newsstand-articles-${nconf.get('ENVIRONMENT').toLowerCase()}`,
             queueNameVideos: `cnn-google-newsstand-videos-${nconf.get('ENVIRONMENT').toLowerCase()}`,
+            // TODO: remove when Money feed is decommissioned
             routingKeysArticles: ['cnn.article', 'money.article', 'cnn.gallery'],
             routingKeysVideos: ['cnn.video'],
             adbpTrackingURL: 'https://smetrics.cnn.com/b/ss/cnnoffsitedev',
@@ -95,7 +97,10 @@ let blackList = '\\/studentnews\\/,\\/videos\\/spanish\\/,fast-facts\\/index.htm
                 region: 'us-east-1',
                 bucket: 'registry.api.cnn.io'
             },
-            logConfig: (typeof process.env.CUSTOMER === 'undefined') ? null : {logzio: {tag: `cnn-google-newsstand-${nconf.get('ENVIRONMENT').toLowerCase()}`}}
+            logConfig: (typeof process.env.CUSTOMER === 'undefined') ? null : {logzio: {tag: `cnn-google-newsstand-${nconf.get('ENVIRONMENT').toLowerCase()}`}},
+            sections: {
+                business: nconf.get('BUSINESS_SECTIONS') ? nconf.get('BUSINESS_SECTIONS') : '\/business|success|india|media|perspectives|investing|cars|economy|energy|homes\/'
+            }
         },
         prod: {
             cloudamqpConnectionString: `amqp://${nconf.get('CLOUDAMQP_AUTH')}@red-rhino.rmq.cloudamqp.com/cnn-towncrier`,
