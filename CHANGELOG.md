@@ -1,5 +1,14 @@
 # CNN Google Newsstand Changelog
 
+## 2018-09-27, Version 1.14.0, @khowen
+
+### Notable changes
+- adding a business feed
+- updated npm token usage
+
+### Commits
+* [[`aaa47b89cb`](https://github.com/jamsyoung/cnn-google-newsstand/commit/aaa47b89cb)] - **(SEMVER-MINOR)** \[Ds-536\]: add new feed (Katie Holland Owen) [#72](https://github.com/jamsyoung/cnn-google-newsstand/pull/72)
+
 ## 2018-06-26, Version 1.13.0, @khowen
 
 ### Notable changes
