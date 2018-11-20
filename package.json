@@ -37,7 +37,7 @@
     "@cnnprivate/cnn-content-retriever": "3.0.0",
     "cnn-hapi": "0.6.4",
     "cnn-health": "0.2.0",
-    "cnn-logger": "1.0.0",
+    "cnn-logger": "2.0.0",
     "debug": "2.2.0",
     "moment": "2.22.2",
     "moment-timezone": "0.5.4",
